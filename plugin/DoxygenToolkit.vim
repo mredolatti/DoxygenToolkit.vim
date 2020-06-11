@@ -369,6 +369,14 @@ else
   let g:DoxygenToolkit_commentType = "C"
 endif
 
+if !exists("g:DoxygenToolkit_blockStart")
+  let g:DoxygenToolkit_blockStart = "@{"
+endif
+if !exists("g:DoxygenToolkit_blockEnd")
+  let g:DoxygenToolkit_blockEnd = "@}"
+endif
+
+
 " Compact documentation
 " /**
 "  * \brief foo      --->    /** \brief foo */
@@ -537,9 +545,9 @@ function! <SID>DoxygenBlockFunc()
   let l:insertionMode = s:StartDocumentationBlock()
   exec "normal ".l:insertionMode.s:interCommentTag.g:DoxygenToolkit_blockTag
   mark d
-  exec "normal o".s:interCommentTag."@{ ".s:endCommentTag
+  exec "normal o".s:interCommentTag.s:blockStart.s:endCommentTag
   exec "normal o".strpart( s:startCommentTag, 0, 1 )
-  exec "normal A".strpart( s:startCommentTag, 1 )." @} ".s:endCommentTag
+  exec "normal A".strpart( s:startCommentTag, 1 ).s:blockEnd.s:endCommentTag
   exec "normal `d"
 
   call s:RestoreParameters()
@@ -1089,6 +1097,9 @@ function! s:InitializeParameters()
     let s:interCommentBlock = "# "
     let s:endCommentBlock   = ""
   endif
+
+  let s:blockStart = g:DoxygenToolkit_blockStart
+  let s:blockEnd = g:DoxygenToolkit_blockEnd
 
   " Backup standard comment expension and indentation
   let s:commentsBackup = &comments
